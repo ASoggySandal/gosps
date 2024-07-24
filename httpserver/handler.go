@@ -15,9 +15,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/patrickhener/goshs/logger"
-	"github.com/patrickhener/goshs/utils"
-	"github.com/patrickhener/goshs/ws"
+	"github.com/ASoggySandal/gosps/logger"
+	"github.com/ASoggySandal/gosps/utils"
+	"github.com/ASoggySandal/gosps/ws"
 )
 
 // embedded will give additional embedded content shipped with the binary

@@ -1,9 +1,9 @@
 ![Version](https://img.shields.io/badge/Version-v0.4.1-green)
-[![GitHub](https://img.shields.io/github/license/patrickhener/goshs)](https://github.com/patrickhener/goshs/blob/master/LICENSE)
+[![GitHub](https://img.shields.io/github/license/patrickhener/goshs)](https://github.com/ASoggySandal/gosps/blob/master/LICENSE)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/patrickhener/goshs)
-[![GitHub issues](https://img.shields.io/github/issues-raw/patrickhener/goshs)](https://github.com/patrickhener/goshs/issues)
-![goreleaser](https://github.com/patrickhener/goshs/workflows/goreleaser/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/patrickhener/goshs)](https://goreportcard.com/report/github.com/patrickhener/goshs)
+[![GitHub issues](https://img.shields.io/github/issues-raw/patrickhener/goshs)](https://github.com/ASoggySandal/gosps/issues)
+![goreleaser](https://github.com/ASoggySandal/gosps/workflows/goreleaser/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ASoggySandal/gosps)](https://goreportcard.com/report/github.com/ASoggySandal/gosps)
 
 <img src="https://github.com/patrickhener/image-cdn/blob/main/goshs-banner-light.png" alt="goshs-logo" height="100">
 
@@ -55,13 +55,13 @@ For a detailed documentation go to [goshs.de](https://goshs.de)
 # Installation
 
 ## Release
-You can download the executable from the [release section](https://github.com/patrickhener/goshs/releases)
+You can download the executable from the [release section](https://github.com/ASoggySandal/gosps/releases)
 
 ## Go
 
 ```bash
-go get -u github.com/patrickhener/goshs
-go install github.com/patrickhener/goshs@latest
+go get -u github.com/ASoggySandal/gosps
+go install github.com/ASoggySandal/gosps@latest
 ```
 
 ## Build yourself
@@ -69,7 +69,7 @@ go install github.com/patrickhener/goshs@latest
 Building requirements are [ugilfy-js](https://www.npmjs.com/package/uglify-js) and [sass](https://sass-lang.com/install). After installing this packages you can easily just:
 
 ```bash
-git clone https://github.com/patrickhener/goshs.git
+git clone https://github.com/ASoggySandal/gosps.git
 cd goshs
 make build-all
 ```

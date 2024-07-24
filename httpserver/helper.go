@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/patrickhener/goshs/logger"
+	"github.com/ASoggySandal/gosps/logger"
 )
 
 func removeItem(sSlice []item, item string) []item {

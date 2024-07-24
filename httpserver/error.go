@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/patrickhener/goshs/logger"
-	"github.com/patrickhener/goshs/utils"
+	"github.com/ASoggySandal/gosps/logger"
+	"github.com/ASoggySandal/gosps/utils"
 )
 
 func (fs *FileServer) handleError(w http.ResponseWriter, req *http.Request, err error, status int) {

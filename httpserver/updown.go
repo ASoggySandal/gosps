@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/patrickhener/goshs/logger"
+	"github.com/ASoggySandal/gosps/logger"
 )
 
 // upload handles the POST request to upload files
@@ -22,91 +22,95 @@ func (fs *FileServer) upload(w http.ResponseWriter, req *http.Request) {
 		fs.handleError(w, req, fmt.Errorf("%s", "Upload not allowed due to 'read only' option"), http.StatusForbidden)
 		return
 	}
-	// Get url so you can extract Headline and title
-	upath := req.URL.Path
 
-	// construct target path
-	targetpath := strings.Split(upath, "/")
-	targetpath = targetpath[:len(targetpath)-1]
-	target := strings.Join(targetpath, "/")
+	if req.URL.Path == "/upload" {
+		// Get url so you can extract Headline and title
+		upath := req.URL.Path
 
-	// Parse request
-	// Limit memory usage to 16MB
-	if err := req.ParseMultipartForm(1 << 24); err != nil {
-		logger.Errorf("parsing multipart request: %+v", err)
-		return
-	}
+		// construct target path
+		targetpath := strings.Split(upath, "/")
+		targetpath = targetpath[:len(targetpath)-1]
+		target := strings.Join(targetpath, "/")
 
-	// Get ref to the parsed multipart form
-	m := req.MultipartForm
-
-	// Remove all temporary files when we return
-	defer m.RemoveAll()
-
-	for _, f := range m.File {
-		file, err := f[0].Open()
-		if err != nil {
-			logger.Errorf("retrieving the file: %+v\n", err)
-		}
-		defer file.Close()
-
-		filename := f[0].Filename
-
-		// Sanitize filename (No path traversal)
-		filenameSlice := strings.Split(filename, "/")
-		filenameClean := filenameSlice[len(filenameSlice)-1]
-
-		// Construct absolute savepath
-		savepath := fmt.Sprintf("%s%s/%s", fs.Webroot, target, filenameClean)
-
-		// Create file to write to
-		// disable G304 (CWE-22): Potential file inclusion via variable
-		// #nosec G304
-		if _, err := os.Create(savepath); err != nil {
-			logger.Errorf("Not able to create file on disk")
-			fs.handleError(w, req, err, http.StatusInternalServerError)
+		// Parse request
+		// Limit memory usage to 16MB
+		if err := req.ParseMultipartForm(1 << 24); err != nil {
+			logger.Errorf("parsing multipart request: %+v", err)
+			return
 		}
 
-		// Write file to disk 16MB at a time
-		buffer := make([]byte, 1<<24)
+		// Get ref to the parsed multipart form
+		m := req.MultipartForm
 
-		// disable G304 (CWE-22): Potential file inclusion via variable
-		// #nosec G304
-		osFile, err := os.OpenFile(savepath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
-		if err != nil {
-			logger.Warnf("Error opening file: %+v", err)
-		}
-		defer func() {
-			if err := osFile.Close(); err != nil {
-				logger.Errorf("error closing file: %+v", err)
+		// Remove all temporary files when we return
+		defer m.RemoveAll()
+
+		for _, f := range m.File {
+			file, err := f[0].Open()
+			if err != nil {
+				logger.Errorf("retrieving the file: %+v\n", err)
 			}
-		}()
+			defer file.Close()
 
-		for {
-			// Read file from post body
-			nBytes, readErr := file.Read(buffer)
-			if readErr != nil && readErr != io.EOF {
-				logger.Errorf("Not able to read file from request")
+			filename := f[0].Filename
+
+			// Sanitize filename (No path traversal)
+			filenameSlice := strings.Split(filename, "/")
+			filenameClean := filenameSlice[len(filenameSlice)-1]
+
+			// Construct absolute savepath
+			savepath := fmt.Sprintf("%s%s/%s", fs.Webroot, target, filenameClean)
+
+			// Create file to write to
+			// disable G304 (CWE-22): Potential file inclusion via variable
+			// #nosec G304
+			if _, err := os.Create(savepath); err != nil {
+				logger.Errorf("Not able to create file on disk")
 				fs.handleError(w, req, err, http.StatusInternalServerError)
 			}
 
-			// Write file to disk
-			if _, err := osFile.Write(buffer[:nBytes]); err != nil {
-				logger.Errorf("Not able to write file to disk")
-				fs.handleError(w, req, err, http.StatusInternalServerError)
-			}
+			// Write file to disk 16MB at a time
+			buffer := make([]byte, 1<<24)
 
-			if readErr == io.EOF {
-				break
+			// disable G304 (CWE-22): Potential file inclusion via variable
+			// #nosec G304
+			osFile, err := os.OpenFile(savepath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
+			if err != nil {
+				logger.Warnf("Error opening file: %+v", err)
+			}
+			defer func() {
+				if err := osFile.Close(); err != nil {
+					logger.Errorf("error closing file: %+v", err)
+				}
+			}()
+
+			for {
+				// Read file from post body
+				nBytes, readErr := file.Read(buffer)
+				if readErr != nil && readErr != io.EOF {
+					logger.Errorf("Not able to read file from request")
+					fs.handleError(w, req, err, http.StatusInternalServerError)
+				}
+
+				// Write file to disk
+				if _, err := osFile.Write(buffer[:nBytes]); err != nil {
+					logger.Errorf("Not able to write file to disk")
+					fs.handleError(w, req, err, http.StatusInternalServerError)
+				}
+
+				if readErr == io.EOF {
+					break
+				}
 			}
 		}
+		// Log request
+		logger.LogRequest(req, http.StatusOK, fs.Verbose)
+		// Redirect back from where we came from
+		http.Redirect(w, req, target, http.StatusSeeOther)
+	} else {
+		// Log request
+		logger.LogRequest(req, http.StatusOK, fs.Verbose)
 	}
-
-	// Log request
-	logger.LogRequest(req, http.StatusOK, fs.Verbose)
-
-	// Redirect back from where we came from
-	http.Redirect(w, req, target, http.StatusSeeOther)
 }
 
 // bulkDownload will provide zip archived download bundle of multiple selected files

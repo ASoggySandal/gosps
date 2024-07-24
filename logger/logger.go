@@ -3,10 +3,11 @@ package logger
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 
@@ -35,17 +36,11 @@ func LogRequest(req *http.Request, status int, verbose bool) {
 }
 
 func logVerbose(req *http.Request) {
-	logger.Infof("User Agent: %s", req.UserAgent())
-	auth := req.Header.Get("Authorization")
-	if auth != "" {
-		logger.Infof("Authorization Header: %s", auth)
-		if strings.Contains(auth, "Basic") {
-			decodedAuth, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(auth, "Basic ", ""))
-			if err != nil {
-				logger.Warnf("error decoding basic auth: %s", err)
-				return
-			}
-			logger.Infof("Decoded Authorization is: '%s'", decodedAuth)
+	// Log all received headers
+	for name, values := range req.Header {
+		// Loop over all values for the name (in case there are multiple values)
+		for _, value := range values {
+			logger.Infof("\t%s = %s", name, value)
 		}
 	}
 	for k, v := range req.URL.Query() {
@@ -65,6 +60,46 @@ func logVerbose(req *http.Request) {
 				// fmt.Println(v[0])
 				fmt.Println(dst.String())
 			}
+		}
+	}
+	if req.Method == http.MethodPost && req.URL.Path != "/upload" {
+		contentType := req.Header.Get("Content-Type")
+		bodyBytes, err := io.ReadAll(req.Body)
+		if err != nil {
+			logger.Warnf("error reading request body: %s", err)
+			return
+		}
+		defer req.Body.Close()
+
+		if strings.Contains(contentType, "application/json") {
+			logger.Infof("POST Body is JSON")
+			var jsonBody map[string]interface{}
+			if err := json.Unmarshal(bodyBytes, &jsonBody); err != nil {
+				logger.Warnf("error unmarshalling JSON body: %s", err)
+			} else {
+				prettyJSON, err := json.MarshalIndent(jsonBody, "", "  ")
+				if err != nil {
+					logger.Warnf("error pretty-printing JSON body: %s", err)
+					fmt.Println(string(bodyBytes))
+				} else {
+					fmt.Println(string(prettyJSON))
+				}
+			}
+		} else if strings.Contains(contentType, "application/x-www-form-urlencoded") {
+			logger.Infof("POST Body is form-urlencoded")
+			bodyString := string(bodyBytes)
+			values, err := url.ParseQuery(bodyString)
+			if err != nil {
+				logger.Warnf("error parsing form-urlencoded body: %s", err)
+				fmt.Println(bodyString)
+			} else {
+				for k, v := range values {
+					fmt.Printf("%s: %s\n", k, strings.Join(v, ","))
+				}
+			}
+		} else {
+			logger.Infof("POST Body has unrecognized Content-Type: %s", contentType)
+			fmt.Println(string(bodyBytes))
 		}
 	}
 }

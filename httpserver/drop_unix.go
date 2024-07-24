@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/patrickhener/goshs/logger"
+	"github.com/ASoggySandal/gosps/logger"
 )
 
 func (fs *FileServer) dropPrivs() {

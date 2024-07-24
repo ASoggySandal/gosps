@@ -9,10 +9,10 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/patrickhener/goshs/ca"
-	"github.com/patrickhener/goshs/httpserver"
-	"github.com/patrickhener/goshs/logger"
-	"github.com/patrickhener/goshs/utils"
+	"github.com/ASoggySandal/gosps/httpserver"
+	"github.com/ASoggySandal/gosps/logger"
+	"github.com/ASoggySandal/gosps/ca"
+	"github.com/ASoggySandal/gosps/utils"
 )
 
 const goshsVersion = "v0.4.1"
@@ -82,8 +82,8 @@ Authentication options:
 
 Misc options:
   -u  --user          Drop privs to user (unix only)          (default: current user)
-  -V  --verbose       Activate verbose log output             (default: false)
-  -v                  Print the current goshs version
+  -v  --verbose       Activate verbose log output             (default: false)
+  -V  --version       Print the current goshs version
 
 Usage examples:
   Start with default values:    	./goshs
@@ -100,7 +100,7 @@ Usage examples:
 	}
 }
 
-func flags() (*bool, *bool, *bool) {
+func flags() (*bool, *bool, bool) {
 	wd, _ := os.Getwd()
 
 	flag.StringVar(&ip, "i", ip, "ip")
@@ -131,7 +131,7 @@ func flags() (*bool, *bool, *bool) {
 	flag.BoolVar(&uploadOnly, "upload-only", uploadOnly, "upload only")
 	flag.BoolVar(&readOnly, "ro", readOnly, "read only")
 	flag.BoolVar(&readOnly, "read-only", readOnly, "read only")
-	flag.BoolVar(&verbose, "V", verbose, "verbose")
+	flag.BoolVar(&verbose, "v", verbose, "verbose")
 	flag.BoolVar(&verbose, "verbose", verbose, "verbose")
 	flag.BoolVar(&silent, "si", silent, "silent")
 	flag.BoolVar(&silent, "silent", silent, "silent")
@@ -153,11 +153,14 @@ func flags() (*bool, *bool, *bool) {
 	flag.BoolVar(&embedded, "embedded", embedded, "")
 	hash := flag.Bool("H", false, "hash")
 	hashLong := flag.Bool("hash", false, "hash")
-	version := flag.Bool("v", false, "goshs version")
+	vFlag := flag.Bool("V", false, "goshs version")
+	versionFlag := flag.Bool("version", false, "goshs version")
 
 	flag.Usage = usage()
 
 	flag.Parse()
+
+	version := *vFlag || *versionFlag
 
 	return hash, hashLong, version
 }
@@ -207,7 +210,7 @@ func init() {
 	// flags
 	hash, hashLong, version := flags()
 
-	if *version {
+	if version {
 		fmt.Printf("goshs version is: %+v\n", goshsVersion)
 		os.Exit(0)
 	}

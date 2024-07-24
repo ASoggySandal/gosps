@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/howeyc/gopass"
-	"github.com/patrickhener/goshs/logger"
+	"github.com/ASoggySandal/gosps/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 

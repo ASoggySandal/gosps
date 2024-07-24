@@ -12,10 +12,10 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/howeyc/gopass"
-	"github.com/patrickhener/goshs/ca"
-	"github.com/patrickhener/goshs/clipboard"
-	"github.com/patrickhener/goshs/logger"
-	"github.com/patrickhener/goshs/ws"
+	"github.com/ASoggySandal/gosps/ca"
+	"github.com/ASoggySandal/gosps/clipboard"
+	"github.com/ASoggySandal/gosps/logger"
+	"github.com/ASoggySandal/gosps/ws"
 	"golang.org/x/net/webdav"
 	"software.sslmate.com/src/go-pkcs12"
 )

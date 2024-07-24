@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/patrickhener/goshs/cli"
-	"github.com/patrickhener/goshs/logger"
+	"github.com/ASoggySandal/gosps/cli"
+	"github.com/ASoggySandal/gosps/logger"
 )
 
 // Packet defines a packet struct

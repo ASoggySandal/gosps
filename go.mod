@@ -1,4 +1,4 @@
-module github.com/patrickhener/goshs
+module github.com/ASoggySandal/gosps
 
 go 1.21
 

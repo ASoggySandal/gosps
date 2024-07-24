@@ -3,8 +3,8 @@ package httpserver
 import (
 	"html/template"
 
-	"github.com/patrickhener/goshs/clipboard"
-	"github.com/patrickhener/goshs/ws"
+	"github.com/ASoggySandal/gosps/clipboard"
+	"github.com/ASoggySandal/gosps/ws"
 )
 
 type baseTemplate struct {
