@@ -9,13 +9,13 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/ASoggySandal/gosps/ca"
 	"github.com/ASoggySandal/gosps/httpserver"
 	"github.com/ASoggySandal/gosps/logger"
-	"github.com/ASoggySandal/gosps/ca"
 	"github.com/ASoggySandal/gosps/utils"
 )
 
-const goshsVersion = "v0.4.1"
+const gospsVersion = "v1.0.1"
 
 var (
 	port        = 8000
@@ -96,7 +96,7 @@ Usage examples:
   Start with basic auth empty user:	./goshs -b :$up3r$3cur3
   Start with cli enabled:           	./goshs -b secret-user:$up3r$3cur3 -s -ss -c
 
-`, goshsVersion, os.Args[0])
+`, gospsVersion, os.Args[0])
 	}
 }
 
@@ -211,7 +211,7 @@ func init() {
 	hash, hashLong, version := flags()
 
 	if version {
-		fmt.Printf("goshs version is: %+v\n", goshsVersion)
+		fmt.Printf("gosps version is: %+v\n", gospsVersion)
 		os.Exit(0)
 	}
 
@@ -297,7 +297,7 @@ func main() {
 		Silent:      silent,
 		Embedded:    embedded,
 		Verbose:     verbose,
-		Version:     goshsVersion,
+		Version:     gospsVersion,
 	}
 
 	go server.Start("web")
